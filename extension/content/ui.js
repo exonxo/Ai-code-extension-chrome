@@ -90,6 +90,7 @@ const PromptUI = (function () {
       <select class="pta-provider-select">
         <option value="openai">OpenAI</option>
         <option value="anthropic">Anthropic</option>
+        <option value="groq">Groq (Llama 3 — free)</option>
       </select>
       <label>API Key</label>
       <input type="password" class="pta-key-input" placeholder="sk-..." />

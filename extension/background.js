@@ -40,6 +40,8 @@ async function handleImprovePrompt({ action, prompt }) {
     return callOpenAI(settings.apiKey, systemPrompt, prompt);
   } else if (settings.provider === 'anthropic') {
     return callAnthropic(settings.apiKey, systemPrompt, prompt);
+  } else if (settings.provider === 'groq') {
+    return callGroq(settings.apiKey, systemPrompt, prompt);
   } else {
     throw new Error('Unknown provider: ' + settings.provider);
   }
@@ -98,4 +100,31 @@ async function callAnthropic(apiKey, systemPrompt, userPrompt) {
 
   const data = await res.json();
   return data.content[0].text.trim();
+}
+
+async function callGroq(apiKey, systemPrompt, userPrompt) {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_tokens: 2048,
+      temperature: 0.7
+    })
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error('Groq API error (' + res.status + '): ' + body);
+  }
+
+  const data = await res.json();
+  return data.choices[0].message.content.trim();
 }

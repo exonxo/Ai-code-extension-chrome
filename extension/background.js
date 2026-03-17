@@ -6,6 +6,18 @@ const SYSTEM_PROMPTS = {
   expert: 'Rewrite this prompt as a domain expert would write it — precise language, explicit constraints, defined output format. Return only the improved prompt.'
 };
 
+chrome.runtime.onInstalled.addListener(async () => {
+  const { schemaVersion } = await chrome.storage.local.get('schemaVersion');
+  if (!schemaVersion) {
+    await chrome.storage.local.set({
+      schemaVersion: 1,
+      settings: null,
+      drafts: {},
+      savedPrompts: []
+    });
+  }
+});
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'improve-prompt') {
     handleImprovePrompt(message)

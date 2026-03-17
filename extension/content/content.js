@@ -15,9 +15,14 @@
   let autosaveIntervalId = null;
 
   function getTextareaSelector() {
-    if (SITE === 'chatgpt.com') return '#prompt-textarea, textarea[data-id]';
+    // ChatGPT migrated to contenteditable div; keep legacy textarea selector as fallback
+    if (SITE === 'chatgpt.com') return '#prompt-textarea, div[contenteditable="true"][data-placeholder], textarea[data-id]';
     if (SITE === 'claude.ai') return 'div[contenteditable="true"]';
     return null;
+  }
+
+  function isContentEditable(el) {
+    return el && el.getAttribute('contenteditable') === 'true';
   }
 
   function findTextarea() {
@@ -35,20 +40,8 @@
   function setTextContent(el, text) {
     if (!el) return;
 
-    if (SITE === 'chatgpt.com') {
-      // React-controlled textarea: use nativeInputValueSetter
-      const setter = Object.getOwnPropertyDescriptor(
-        HTMLTextAreaElement.prototype, 'value'
-      )?.set;
-      if (setter) {
-        setter.call(el, text);
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      } else {
-        el.value = text;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    } else if (SITE === 'claude.ai') {
-      // contenteditable div — use execCommand to preserve editor state
+    // Use contenteditable strategy for any contenteditable element (both sites may use it)
+    if (isContentEditable(el)) {
       el.focus();
       document.execCommand('selectAll', false, null);
       if (!document.execCommand('insertText', false, text)) {
@@ -64,6 +57,17 @@
           el.dispatchEvent(new InputEvent('input', { bubbles: true }));
         }
       }
+    } else if (el.tagName === 'TEXTAREA') {
+      // Legacy textarea: use nativeInputValueSetter for React
+      const setter = Object.getOwnPropertyDescriptor(
+        HTMLTextAreaElement.prototype, 'value'
+      )?.set;
+      if (setter) {
+        setter.call(el, text);
+      } else {
+        el.value = text;
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }));
     }
   }
 

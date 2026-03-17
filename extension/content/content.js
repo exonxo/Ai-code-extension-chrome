@@ -3,6 +3,13 @@
 (function () {
   'use strict';
 
+  // One-time storage init safety check
+  chrome.storage.local.get('schemaVersion').then(({ schemaVersion }) => {
+    if (!schemaVersion) {
+      chrome.storage.local.set({ schemaVersion: 1, drafts: {}, savedPrompts: [] });
+    }
+  });
+
   const SITE = location.hostname; // 'chatgpt.com' or 'claude.ai'
   let currentTextarea = null;
   let autosaveIntervalId = null;

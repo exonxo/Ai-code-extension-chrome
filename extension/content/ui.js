@@ -119,6 +119,13 @@ const PromptUI = (function () {
     // Start hidden
     container.style.display = 'none';
 
+    // Click-outside-to-dismiss
+    shadowRoot.addEventListener('click', (e) => {
+      if (!e.target.closest('.pta-tooltip') && !e.target.closest('.pta-btn') && !e.target.closest('.pta-key-overlay') && !e.target.closest('.pta-prompts-dropdown')) {
+        hideAll();
+      }
+    });
+
     return host;
   }
 

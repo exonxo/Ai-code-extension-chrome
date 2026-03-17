@@ -1,35 +1,44 @@
 /* styles.css — Injected into shadow DOM */
 
+:host {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+}
+
 /* Floating button */
 .pta-btn {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.5;
+  opacity: 0.6;
   transition: opacity 0.15s, background 0.15s;
   padding: 0;
 }
 
 .pta-btn:hover {
   opacity: 1;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .pta-btn svg {
   width: 16px;
   height: 16px;
   fill: none;
-  stroke: #555;
+  stroke: rgba(255, 255, 255, 0.7);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.pta-btn:hover svg {
+  stroke: #fff;
 }
 
 .pta-btn.loading svg {
@@ -41,13 +50,13 @@
   to { transform: rotate(360deg); }
 }
 
-/* Button row */
+/* Button row — positioned to avoid overlap with site send button */
 .pta-buttons {
   display: flex;
   gap: 4px;
   position: absolute;
   bottom: 8px;
-  right: 8px;
+  right: 56px;
 }
 
 /* Tooltip menu */
@@ -55,10 +64,10 @@
   position: absolute;
   bottom: calc(100% + 6px);
   right: 0;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #2d2d2d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   padding: 4px;
   display: none;
   min-width: 160px;
@@ -72,12 +81,13 @@
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  color: #333;
+  color: #e5e5e5;
   white-space: nowrap;
 }
 
 .pta-tooltip-item:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 /* Key setup overlay */
@@ -85,10 +95,10 @@
   position: absolute;
   bottom: calc(100% + 6px);
   right: 0;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #2d2d2d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   padding: 16px;
   display: none;
   min-width: 240px;
@@ -102,7 +112,7 @@
   display: block;
   font-size: 12px;
   font-weight: 500;
-  color: #555;
+  color: #aaa;
   margin-bottom: 4px;
 }
 
@@ -110,11 +120,13 @@
 .pta-key-overlay input {
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
   font-size: 13px;
   margin-bottom: 10px;
   box-sizing: border-box;
+  background: #1a1a1a;
+  color: #e5e5e5;
 }
 
 .pta-key-overlay button {
@@ -138,9 +150,9 @@
   position: absolute;
   bottom: calc(100% + 6px);
   right: 0;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: #451a1a;
+  border: 1px solid #7f1d1d;
+  color: #fca5a5;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 12px;
@@ -157,10 +169,10 @@
   position: absolute;
   bottom: calc(100% + 6px);
   right: 0;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #2d2d2d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   padding: 4px;
   display: none;
   min-width: 240px;
@@ -176,7 +188,7 @@
   padding: 4px 8px;
   font-size: 11px;
   font-weight: 600;
-  color: #999;
+  color: #777;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -185,7 +197,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  color: #333;
+  color: #e5e5e5;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -193,7 +205,7 @@
 }
 
 .pta-prompt-item:hover {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .pta-prompt-item .text {
@@ -218,4 +230,36 @@
 
 .pta-prompt-item .delete:hover {
   color: #ef4444;
+}
+
+/* Light mode override — for sites using light theme */
+@media (prefers-color-scheme: light) {
+  .pta-btn {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+  }
+  .pta-btn:hover {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  .pta-btn svg { stroke: #555; }
+  .pta-btn:hover svg { stroke: #333; }
+  .pta-tooltip, .pta-key-overlay, .pta-prompts-dropdown {
+    background: #fff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+  .pta-tooltip-item, .pta-prompt-item { color: #333; }
+  .pta-tooltip-item:hover, .pta-prompt-item:hover { background: #f3f4f6; }
+  .pta-key-overlay label { color: #555; }
+  .pta-key-overlay select, .pta-key-overlay input {
+    background: #fff;
+    color: #333;
+    border-color: #ddd;
+  }
+  .pta-error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
 }

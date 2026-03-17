@@ -116,6 +116,12 @@ const PromptUI = (function () {
       }, 200);
     });
 
+    // Prevent blur from hiding UI when clicking inside shadow DOM
+    host.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // prevents textarea from losing focus
+      clearTimeout(blurTimeout);
+    });
+
     // Start hidden
     container.style.display = 'none';
 

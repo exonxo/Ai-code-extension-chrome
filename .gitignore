@@ -1,0 +1,21 @@
+# Private keys — never commit
+*.pem
+*.key
+
+# Packaged builds
+*.crx
+*.zip
+
+# Claude Code session data
+.claude/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Prompt Thinking Assistant",
+  "name": "Clippy - Prompt Editor",
   "version": "1.0.0",
-  "description": "Improve, autosave, and reuse prompts inside ChatGPT and Claude",
+  "description": "Your AI prompt sidekick. Refine, structure, score, and compress prompts inside ChatGPT and Claude.",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": [
     "https://api.openai.com/*",
@@ -16,6 +16,7 @@
     {
       "matches": ["https://chatgpt.com/*", "https://claude.ai/*"],
       "js": [
+        "content/guard.js",
         "content/autosave.js",
         "content/prompts.js",
         "content/ui.js",

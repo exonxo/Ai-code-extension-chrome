@@ -7,32 +7,37 @@ const SavedPrompts = (function () {
   const MAX_SAVED = 50;
   let dropdownEl = null;
 
+  function dead() {
+    return window.__ptaIsDead && window.__ptaIsDead();
+  }
+
   async function save(text) {
-    const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
-
-    savedPrompts.unshift({
-      id: crypto.randomUUID(),
-      text,
-      createdAt: Date.now()
-    });
-
-    // Trim to max
-    if (savedPrompts.length > MAX_SAVED) {
-      savedPrompts.length = MAX_SAVED;
-    }
-
-    await chrome.storage.local.set({ savedPrompts });
+    if (dead()) return;
+    try {
+      const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
+      savedPrompts.unshift({ id: crypto.randomUUID(), text, createdAt: Date.now() });
+      if (savedPrompts.length > MAX_SAVED) savedPrompts.length = MAX_SAVED;
+      await chrome.storage.local.set({ savedPrompts });
+    } catch (_) { /* context invalidated */ }
   }
 
   async function remove(id) {
-    const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
-    const filtered = savedPrompts.filter(p => p.id !== id);
-    await chrome.storage.local.set({ savedPrompts: filtered });
+    if (dead()) return;
+    try {
+      const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
+      const filtered = savedPrompts.filter(p => p.id !== id);
+      await chrome.storage.local.set({ savedPrompts: filtered });
+    } catch (_) { /* context invalidated */ }
   }
 
   async function getAll() {
-    const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
-    return savedPrompts;
+    if (dead()) return [];
+    try {
+      const { savedPrompts = [] } = await chrome.storage.local.get('savedPrompts');
+      return savedPrompts;
+    } catch (_) {
+      return [];
+    }
   }
 
   function truncate(text, len) {
@@ -42,6 +47,7 @@ const SavedPrompts = (function () {
 
   async function showDropdown(parentContainer, site, onSelect) {
     hideDropdown();
+    if (dead()) return;
 
     const [saved, recent] = await Promise.all([
       getAll(),

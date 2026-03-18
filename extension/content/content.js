@@ -1,14 +1,23 @@
 // content/content.js — Entry point: detect textarea, coordinate modules
+// NOTE: guard.js MUST be loaded before this file (defines window.__ptaContextGuard)
 
 (function () {
   'use strict';
 
+  // Bail immediately if extension context is already dead
+  if (window.__ptaIsDead && window.__ptaIsDead()) return;
+
   // One-time storage init safety check
-  chrome.storage.local.get('schemaVersion').then(({ schemaVersion }) => {
-    if (!schemaVersion) {
-      chrome.storage.local.set({ schemaVersion: 1, drafts: {}, savedPrompts: [] });
-    }
-  });
+  const guard = window.__ptaContextGuard;
+  if (guard) {
+    guard(() =>
+      chrome.storage.local.get('schemaVersion').then(({ schemaVersion }) => {
+        if (!schemaVersion) {
+          chrome.storage.local.set({ schemaVersion: 1, drafts: {}, savedPrompts: [] });
+        }
+      })
+    );
+  }
 
   const SITE = location.hostname; // 'chatgpt.com' or 'claude.ai'
   let currentTextarea = null;

@@ -8,25 +8,31 @@ const Autosave = (function () {
   const MAX_HISTORY = 5;
   let lastSavedText = '';
 
+  function dead() {
+    return window.__ptaIsDead && window.__ptaIsDead();
+  }
+
   async function saveDraft(hostname, text) {
     if (text === lastSavedText) return;
+    if (dead()) return; // stop silently if extension reloaded
     lastSavedText = text;
 
-    const { drafts = {} } = await chrome.storage.local.get('drafts');
-    const siteDraft = drafts[hostname] || { lastPrompt: '', history: [] };
+    try {
+      const { drafts = {} } = await chrome.storage.local.get('drafts');
+      const siteDraft = drafts[hostname] || { lastPrompt: '', history: [] };
 
-    siteDraft.lastPrompt = text;
+      siteDraft.lastPrompt = text;
 
-    // Add to history if different from most recent entry
-    if (text.trim() && siteDraft.history[0] !== text) {
-      siteDraft.history.unshift(text);
-      if (siteDraft.history.length > MAX_HISTORY) {
-        siteDraft.history = siteDraft.history.slice(0, MAX_HISTORY);
+      if (text.trim() && siteDraft.history[0] !== text) {
+        siteDraft.history.unshift(text);
+        if (siteDraft.history.length > MAX_HISTORY) {
+          siteDraft.history = siteDraft.history.slice(0, MAX_HISTORY);
+        }
       }
-    }
 
-    drafts[hostname] = siteDraft;
-    await chrome.storage.local.set({ drafts });
+      drafts[hostname] = siteDraft;
+      await chrome.storage.local.set({ drafts });
+    } catch (_) { /* context invalidated — global handler shows banner */ }
   }
 
   function start(textarea, hostname, getText) {
@@ -39,22 +45,30 @@ const Autosave = (function () {
 
   async function restore(textarea, hostname, getText, setText) {
     const currentText = getText(textarea);
-    if (currentText.trim()) return; // Don't overwrite existing content
+    if (currentText.trim()) return;
+    if (dead()) return;
 
-    const { drafts = {} } = await chrome.storage.local.get('drafts');
-    const siteDraft = drafts[hostname];
-    if (!siteDraft || !siteDraft.lastPrompt?.trim()) return;
+    try {
+      const { drafts = {} } = await chrome.storage.local.get('drafts');
+      const siteDraft = drafts[hostname];
+      if (!siteDraft || !siteDraft.lastPrompt?.trim()) return;
 
-    setText(textarea, siteDraft.lastPrompt);
+      setText(textarea, siteDraft.lastPrompt);
 
-    if (typeof PromptUI !== 'undefined') {
-      PromptUI.showToast('Draft restored');
-    }
+      if (typeof PromptUI !== 'undefined') {
+        PromptUI.showToast('Draft restored');
+      }
+    } catch (_) { /* context invalidated */ }
   }
 
   async function getHistory(hostname) {
-    const { drafts = {} } = await chrome.storage.local.get('drafts');
-    return drafts[hostname]?.history || [];
+    if (dead()) return [];
+    try {
+      const { drafts = {} } = await chrome.storage.local.get('drafts');
+      return drafts[hostname]?.history || [];
+    } catch (_) {
+      return [];
+    }
   }
 
   return { start, restore, getHistory };
